@@ -2,5 +2,6 @@ DROP TABLE IF EXISTS todos;
 CREATE TABLE  todos (
 	id SERIAL PRIMARY KEY,
   	todo TEXT NOT NULL,
-  	done BOOLEAN DEFAULT false
+  	done BOOLEAN DEFAULT false,
+	createdAt TIMESTAMP NOT NULL DEFAULT NOW();
 );
