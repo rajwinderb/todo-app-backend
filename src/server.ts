@@ -47,7 +47,7 @@ app.get("/", (req, res) => {
 
 // GET /todos
 app.get("/todos", async (req, res) => {
-  const todo = "SELECT * FROM todos ORDER BY createdAt LIMIT 50";
+  const todo = "SELECT (id, todo, done) FROM todos ORDER BY createdAt LIMIT 50";
   const values: string[] = [];
   const getAllToDos = await client.query(todo, values);
 
@@ -63,7 +63,7 @@ app.post<{}, {}, ToDo>("/todos", async (req, res) => {
   const { todo } = req.body;
   if (typeof todo === "string") {
     const createdTodo = await client.query(
-      "INSERT INTO todos VALUES (default, $1) RETURNING *",
+      "INSERT INTO todos VALUES (default, $1) RETURNING (id, todo, done)",
       [todo]
     );
     res.status(201).json({
@@ -85,7 +85,7 @@ app.get<{ id: string }>("/todos/:id", async (req, res) => {
   const id = parseInt(req.params.id); // params are always string type
 
   const getTodoById = await client.query(
-    "SELECT * FROM todos WHERE id = ($1)",
+    "SELECT (id, todo, done) FROM todos WHERE id = ($1)",
     [id]
   );
   const todo = getTodoById.rows[0];
@@ -109,7 +109,7 @@ app.get<{ id: string }>("/todos/:id", async (req, res) => {
 app.delete<{ id: string }>("/todos/:id", async (req, res) => {
   const id = parseInt(req.params.id);
   const getTodoById = await client.query(
-    "SELECT * FROM todos WHERE id = ($1)",
+    "SELECT (id, todo, done) FROM todos WHERE id = ($1)",
     [id]
   );
   console.log(getTodoById);
@@ -149,7 +149,7 @@ app.patch<{ id: string }, {}, Partial<ToDo>>("/todos/:id", async (req, res) => {
   // update if just todo is changed
   if (todo && typeof todo === "string") {
     const updateResponse = await client.query(
-      "UPDATE todos SET todo = $2 WHERE id = $1 RETURNING *",
+      "UPDATE todos SET todo = $2 WHERE id = $1 RETURNING (id, todo, done)",
       [id, todo]
     );
 
@@ -173,7 +173,7 @@ app.patch<{ id: string }, {}, Partial<ToDo>>("/todos/:id", async (req, res) => {
   // update if just done is changed)
   else if (typeof done === "boolean") {
     const updateResponse = await client.query(
-      "UPDATE todos SET done = $2 WHERE id = $1 RETURNING *",
+      "UPDATE todos SET done = $2 WHERE id = $1 RETURNING (id, todo, done)",
       [id, done]
     );
 
