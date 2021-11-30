@@ -35,14 +35,14 @@ app.get("/", (req, res) => {
   res.sendFile(pathToFile);
 });
 
-// GET /items
+// GET /todos
 app.get("/todos", (req, res) => {
   const allToDos = getAllDbItems();
   res.status(200).json(allToDos);
 });
 
-// POST /items
-app.post<{}, {}, DbItem>("/items", (req, res) => {
+// POST /todos
+app.post<{}, {}, DbItem>("/todos", (req, res) => {
   // to be rigorous, ought to handle non-conforming request bodies
   // ... but omitting this as a simplification
   const postData = req.body;
@@ -50,8 +50,8 @@ app.post<{}, {}, DbItem>("/items", (req, res) => {
   res.status(201).json(createdToDo);
 });
 
-// GET /items/:id
-app.get<{ id: string }>("/items/:id", (req, res) => {
+// GET /todos/:id
+app.get<{ id: string }>("/todos/:id", (req, res) => {
   const matchingToDo = getDbItemById(parseInt(req.params.id));
   if (matchingToDo === "not found") {
     res.status(404).json(matchingToDo);
@@ -60,8 +60,8 @@ app.get<{ id: string }>("/items/:id", (req, res) => {
   }
 });
 
-// DELETE /items/:id
-app.delete<{ id: string }>("/items/:id", (req, res) => {
+// DELETE /todos/:id
+app.delete<{ id: string }>("/todos/:id", (req, res) => {
   const matchingToDo = deleteDbItemById(parseInt(req.params.id));
   if (matchingToDo === "not found") {
     res.status(404).json(matchingToDo);
@@ -70,8 +70,8 @@ app.delete<{ id: string }>("/items/:id", (req, res) => {
   }
 });
 
-// PATCH /items/:id
-app.patch<{ id: string }, {}, Partial<DbItem>>("/items/:id", (req, res) => {
+// PATCH /todos/:id
+app.patch<{ id: string }, {}, Partial<DbItem>>("/todos/:id", (req, res) => {
   const matchingToDo = updateDbItemById(parseInt(req.params.id), req.body);
   if (matchingToDo === "not found") {
     res.status(404).json(matchingToDo);
